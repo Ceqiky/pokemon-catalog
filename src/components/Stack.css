@@ -224,3 +224,18 @@
 @media (prefers-reduced-motion: reduce) {
   .deck-dim, .swipe-badge__icon { transition: none; animation: none; }
 }
+
+/* Производительность на телефоне: полноэкранные слои и значок выносим на GPU (каждый кадр анимируется только opacity/transform),
+   а дорогие SVG-фильтры (drop-shadow) и внутреннюю тень заменяем дешёвыми градиентами, иначе кадры рвутся и значок мигает. */
+.deck-glow, .deck-dim { will-change: opacity; contain: strict; }
+.swipe-badge { will-change: opacity, transform; backface-visibility: hidden; }
+@media (max-width: 720px), (pointer: coarse) {
+  .deck-glow { box-shadow: none; }
+  .swipe-badge__ring,
+  .swipe-badge__runner,
+  .swipe-badge__icon,
+  .deck[data-commit="true"] .swipe-badge--keep .swipe-badge__icon { filter: none; }
+  .deck[data-dragging="true"] .swipe-badge__icon { animation: none; }
+  .swipe-badge__runner { stroke: rgb(var(--glow)); stroke-width: 1.800; stroke-opacity: .55; paint-order: stroke; }
+  .swipe-badge__ring { stroke-width: .55; }
+}
