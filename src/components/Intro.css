@@ -1,0 +1,24 @@
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(ellipse 46% 40% at 50% 46%, rgba(255, 214, 0, .12), transparent 72%),
+    #06070b;
+  transition: opacity .7s ease .7s, visibility .7s ease .7s, transform .7s cubic-bezier(.2, .8, .2, 1) .7s;
+}
+/* Затухание начинается после паузы на 100%: видно, как колба заполняется и плещется. */
+.intro.is-done { opacity: 0; visibility: hidden; transform: scale(1.04); pointer-events: none; }
+
+.intro__core { display: grid; justify-items: center; gap: 30px; }
+.intro__label { font: 500 12px/1 var(--font-body); letter-spacing: .28em; text-transform: uppercase; }
+
+.intro__error { display: grid; justify-items: center; gap: 12px; text-align: center; color: #ffb4be; font-size: 14px; }
+.intro__error p { margin: 0; }
+.intro__error button { min-height: 40px; padding: 0 18px; border: 1px solid rgba(255, 255, 255, .25); border-radius: 12px; background: rgba(255, 255, 255, .06); color: #fff; font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .intro { transition: none; }
+}

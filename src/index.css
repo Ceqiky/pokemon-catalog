@@ -1,0 +1,203 @@
+
+/* Шрифты подключаются в index.html (<link>). Чтобы сменить шрифт, поменяйте семейство там и имя в переменных --font-* ниже.
+   Первым в стеке стоит основной шрифт, следующие подхватывают символы, которых в нём нет (кириллицу). */
+:root {
+  --bg: #06070b;
+  --surface: #0e1018;
+  --line: rgba(255, 255, 255, .08);
+  --text: #eef1ff;
+  --muted: rgba(225, 232, 255, .6);
+  --accent: #9db4ff;
+  --font-display: "Orbitron", "Exo 2", system-ui, sans-serif; /* заголовки и имена */
+  --font-body: "Space Grotesk", "Manrope", system-ui, sans-serif; /* основной текст */
+  --font-mono: "Martian Mono", "Space Mono", ui-monospace, monospace; /* цифры (ноль с диагональю) */
+  --like: #ff4d6a;
+  font-family: var(--font-body);
+  color: var(--text);
+  background: var(--bg);
+  color-scheme: dark;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+html, body { overflow-x: clip; }
+body { margin: 0; min-width: 320px; }
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+::selection { background: rgba(157, 180, 255, .35); }
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+.app-shell { max-width: 1440px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 64px) 56px; }
+
+/* Общие элементы */
+.type-list { display: flex; flex-wrap: wrap; gap: 6px; min-height: 24px; }
+.type-badge {
+  display: inline-flex; align-items: center; padding: 4px 9px; border-radius: 7px;
+  background: color-mix(in srgb, var(--type-color) 20%, #0b0d15);
+  color: color-mix(in srgb, var(--type-color) 55%, #fff);
+  border: 1px solid color-mix(in srgb, var(--type-color) 45%, transparent);
+  font-size: 10px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+}
+.spinner { width: 15px; height: 15px; border: 2px solid rgba(255,255,255,.25); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Каталог */
+.catalog-section { position: relative; padding: 28px 0 0; }
+
+.toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.search-field { position: relative; flex: 1; display: flex; align-items: center; color: var(--muted); }
+.search-field svg { position: absolute; left: 15px; pointer-events: none; }
+.search-field input {
+  width: 100%; min-height: 46px; padding: 0 16px 0 44px;
+  border: 1px solid var(--line); border-radius: 14px;
+  background: rgba(255,255,255,.04); color: var(--text);
+  transition: border-color .2s ease, background .2s ease;
+}
+.search-field input::placeholder { color: rgba(225,232,255,.4); }
+.search-field input:hover { border-color: rgba(255,255,255,.16); }
+.search-field input:focus { outline: none; border-color: rgba(157,180,255,.6); background: rgba(255,255,255,.06); }
+
+.favorites-toggle {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 46px; padding: 0 16px;
+  border: 1px solid var(--line); border-radius: 14px; background: rgba(255,255,255,.04);
+  color: var(--muted); font-weight: 600; font-variant-numeric: tabular-nums;
+  transition: border-color .2s ease, color .2s ease, background .2s ease, box-shadow .2s ease;
+}
+
+.favorites-toggle:hover { color: var(--text); border-color: rgba(255,255,255,.2); }
+.favorites-toggle.active { color: var(--like); border-color: rgba(255,77,106,.55); background: rgba(255,77,106,.08); box-shadow: 0 0 24px -6px rgba(255,77,106,.5); }
+.favorites-toggle span { font-family: var(--font-mono); }
+
+.chips { display: flex; gap: 8px; margin: 0 -4px 22px; padding: 2px 4px 6px; overflow-x: auto; scrollbar-width: none; -webkit-mask-image: linear-gradient(90deg, transparent, #000 16px, #000 calc(100% - 24px), transparent); mask-image: linear-gradient(90deg, transparent, #000 16px, #000 calc(100% - 24px), transparent); }
+.chips::-webkit-scrollbar { display: none; }
+.chip {
+  --type-color: #aab6ff;
+  flex: none; display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 14px;
+  border: 1px solid var(--line); border-radius: 99px; background: rgba(255,255,255,.03);
+  color: var(--muted); font-size: 12px; font-weight: 600; letter-spacing: .06em;
+  transition: border-color .2s ease, color .2s ease, background .2s ease, box-shadow .2s ease;
+}
+.chip i { width: 7px; height: 7px; border-radius: 50%; background: var(--type-color); box-shadow: 0 0 8px var(--type-color); }
+.chip:hover { color: var(--text); border-color: rgba(255,255,255,.2); }
+.chip.is-on { color: #fff; border-color: color-mix(in srgb, var(--type-color) 70%, transparent); background: color-mix(in srgb, var(--type-color) 16%, transparent); box-shadow: 0 0 22px -8px var(--type-color); }
+
+/* Сетка карточек (SpotlightCard из React Bits). Колонок столько, сколько влезает (от 170 px); на телефоне — 2, на очень узком экране — 1 */
+.pokemon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; }
+
+/* Карточка — контейнер: размеры шрифтов и отступов внутри считаются от её ширины (cqw), а не от экрана */
+.pokemon-card.spotlight-card {
+  --type-color: #9aa0b8;
+  container-type: inline-size;
+  display: flex; flex-direction: column; min-width: 0; padding: 0; border-radius: 20px;
+  background-image: radial-gradient(ellipse 90% 45% at 50% 0%, color-mix(in srgb, var(--type-color) 14%, transparent), transparent 75%);
+  transition: transform .3s cubic-bezier(.2,.8,.2,1), box-shadow .3s ease;
+}
+@media (hover: hover) { .pokemon-card.spotlight-card:hover { transform: translateY(-4px); } }
+.pokemon-card.spotlight-card:active { transform: scale(.98); } /* отклик на нажатие (для пальца) */
+.pokemon-card.is-active { box-shadow: 0 0 0 1px color-mix(in srgb, var(--type-color) 75%, transparent), 0 0 34px -8px var(--type-color); }
+.pokemon-card:has(.pokemon-select:focus-visible) { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* Арт с мягкой подсветкой цвета типа; номер и сердце лежат поверх по углам */
+.pc-art { position: relative; aspect-ratio: 1 / .84; border-radius: 20px 20px 0 0; background: radial-gradient(ellipse closest-side at 50% 56%, color-mix(in srgb, var(--type-color) 26%, transparent), transparent 100%); } /* closest-side: свет полностью затухает до ближайшего края блока — нет резкой границы */
+.pokemon-id { position: absolute; z-index: 2; top: 4.4cqw; left: 6cqw; font: 400 clamp(10px, 5.4cqw, 12px) var(--font-mono); letter-spacing: .1em; color: var(--muted); }
+.favorite-button { position: absolute; z-index: 3; top: 1cqw; right: 1.5cqw; display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 50%; background: transparent; color: rgba(225,232,255,.55); transition: transform .2s ease, color .2s ease; }
+@media (hover: hover) { .favorite-button:hover { transform: scale(1.15); color: #fff; } }
+.favorite-button.is-favorite { color: var(--like); filter: drop-shadow(0 0 8px rgba(255,77,106,.6)); }
+.pokemon-art { position: absolute; inset: 13% 10% 3%; animation: art-in .4s cubic-bezier(.2,.8,.2,1) both; }
+.pokemon-art .pimg { width: 100%; height: 100%; }
+.pokemon-art .pimg img { filter: drop-shadow(0 10px 16px rgba(0,0,0,.55)) drop-shadow(0 0 14px color-mix(in srgb, var(--type-color) 26%, transparent)); transition: transform .35s cubic-bezier(.2,.8,.2,1), opacity .35s ease; }
+@media (hover: hover) { .pokemon-card:hover .pokemon-art .pimg img { transform: scale(1.07); } }
+@keyframes art-in { from { opacity: 0; transform: translateY(8px) scale(.94); } }
+
+/* Имя и типы */
+.pc-info { display: grid; gap: 2.6cqw; padding: 1cqw 7cqw 4.5cqw; }
+.pokemon-name { margin: 0; font: 600 clamp(11px, 6.4cqw, 14px)/1.25 var(--font-display); letter-spacing: .06em; text-transform: uppercase; }
+.pokemon-select { padding: 0; border: 0; background: none; font: inherit; letter-spacing: inherit; text-align: left; text-transform: inherit; color: #fff;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; } /* длинное (в том числе русское) имя — максимум 2 строки */
+.pokemon-select::after { content: ""; position: absolute; inset: 0; z-index: 1; border-radius: inherit; }
+.pokemon-select:focus-visible { outline: none; }
+.pc-info .type-list { gap: 1.8cqw; min-height: 0; }
+.pc-info .type-badge { padding: 3px 8px; font-size: clamp(9px, 4.6cqw, 11px); }
+
+/* Подвал: точки стадий эволюции и счётчик */
+.pc-foot { position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding: 0 4.5cqw 3cqw 5cqw; }
+.evo { display: flex; align-items: center; }
+.evo__dot { position: relative; width: 30px; height: 30px; padding: 0; border: 0; background: none; } /* зона нажатия 30 px при визуальной точке 7 px */
+.evo__dot::before { content: ""; position: absolute; left: 50%; top: 50%; width: 7px; height: 7px; margin: -3.5px; border-radius: 99px; background: rgba(255,255,255,.24); transition: width .3s cubic-bezier(.2,.8,.2,1), margin .3s cubic-bezier(.2,.8,.2,1), background .3s ease, box-shadow .3s ease; }
+@media (hover: hover) { .evo__dot:hover::before { background: rgba(255,255,255,.55); } }
+.evo__dot.is-on::before { width: 18px; margin-left: -9px; background: var(--type-color); box-shadow: 0 0 10px var(--type-color); }
+
+.pokemon-card-skeleton.spotlight-card { aspect-ratio: 1 / 1.3; height: auto; background-image: linear-gradient(100deg, transparent 30%, rgba(255,255,255,.05) 50%, transparent 70%); background-size: 220% 100%; animation: card-skeleton 1.4s ease-in-out infinite; }
+@keyframes card-skeleton { from { background-position: 120% 0; } to { background-position: -120% 0; } }
+.pokemon-card-skeleton { border: 1px solid var(--line); border-radius: 20px; background: var(--surface); }
+
+.status-message { padding: 60px 15px; text-align: center; color: var(--muted); }
+.link-button { padding: 0; border: 0; background: none; color: var(--accent); font-weight: 600; text-decoration: underline; }
+.error-message { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; margin-bottom: 16px; border: 1px solid rgba(255,70,90,.4); border-radius: 12px; background: rgba(255,70,90,.08); color: #ffb4be; font-size: 13px; }
+.error-message button { min-height: 36px; border: 1px solid rgba(255,70,90,.5); border-radius: 8px; padding: 0 14px; background: transparent; color: #ffb4be; font-weight: 600; }
+.sentinel { display: grid; place-items: center; min-height: 80px; }
+
+@media (max-width: 900px) { .pokemon-grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); } }
+@media (max-width: 720px) {
+  .pokemon-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .pokemon-card.spotlight-card { border-radius: 18px; }
+  .pc-art { border-radius: 18px 18px 0 0; }
+}
+@media (max-width: 359px) { .pokemon-grid { grid-template-columns: minmax(0, 1fr); } } /* очень узкий экран: одна колонка, чтобы карточка не сжималась */
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .pokemon-card.spotlight-card, .pokemon-art, .pokemon-art .pimg img { transition: none; animation: none; }
+  .pokemon-card.spotlight-card:hover, .pokemon-card.spotlight-card:active { transform: none; }
+  .pokemon-card-skeleton { animation: none; }
+}
+
+/* Переключатель языка (RubberSegment) */
+.lang-switch { position: fixed; top: 16px; right: 16px; z-index: 60; }
+.lang-switch .rubber-segment { font-family: var(--font-display); backdrop-filter: blur(10px); border: 1px solid var(--line); }
+.lang-switch .rubber-segment__item { font-weight: 600; font-size: 11px; letter-spacing: .14em; padding-inline: 12px; }
+
+/* Иконка сердца: контур, а при избранном заливка */
+.icon-heart { width: 18px; height: 18px; fill: transparent; stroke: currentColor; stroke-width: 1.8; stroke-linejoin: round; transition: fill .25s ease, transform .3s cubic-bezier(.2, .9, .2, 1.4); }
+.icon-heart.is-filled { fill: currentColor; animation: heart-pop .4s cubic-bezier(.2, .9, .2, 1.4); }
+@keyframes heart-pop { 40% { transform: scale(1.3); } }
+@media (prefers-reduced-motion: reduce) { .icon-heart.is-filled { animation: none; } }
+
+/* Фон страницы: неподвижная сетка точек на весь экран и мягкое гало за колодой */
+.page-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 45% at 50% 0%, rgba(90, 110, 255, .12), transparent 70%),
+    radial-gradient(ellipse 40% 46% at 50% 46%, rgba(125, 150, 255, .34), transparent 74%),
+    radial-gradient(ellipse 70% 64% at 50% 48%, rgba(150, 110, 255, .08), transparent 78%),
+    radial-gradient(circle, rgba(190, 205, 255, .17) 1px, transparent 1.5px) 0 0 / 28px 28px;
+}
+
+/* Лёгкий рендер длинного списка: невидимые карточки не рисуются */
+.pokemon-card.spotlight-card { content-visibility: auto; contain-intrinsic-size: auto 300px; }
+
+/* Прокрутка: когда ушли с экрана колоды, переключатель языка не мешает поиску, а появляется кнопка «к колоде» (data-scrolled ставит App) */
+.lang-switch { transition: opacity .3s ease, transform .3s ease; }
+html[data-scrolled="true"] .lang-switch { opacity: 0; transform: translateY(-8px); pointer-events: none; }
+.to-deck {
+  position: fixed; z-index: 55; right: max(16px, env(safe-area-inset-right)); bottom: max(16px, env(safe-area-inset-bottom));
+  display: grid; place-items: center; width: 48px; height: 48px; border: 1px solid rgba(255,255,255,.16); border-radius: 50%;
+  background: rgba(14, 16, 26, .82); color: #eef1ff; box-shadow: 0 10px 30px -10px rgba(0,0,0,.8);
+  opacity: 0; transform: translateY(12px) scale(.9); pointer-events: none;
+  transition: opacity .3s ease, transform .3s cubic-bezier(.2, .8, .2, 1), background .2s ease;
+}
+.to-deck svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+html[data-scrolled="true"] .to-deck { opacity: 1; transform: none; pointer-events: auto; }
+@media (hover: hover) { .to-deck:hover { background: rgba(40, 46, 70, .95); } }
+@media (prefers-reduced-motion: reduce) { .lang-switch, .to-deck { transition: none; } }
+
+/* Отступ снизу с учётом «чёлки»/индикатора на телефонах */
+.app-shell { padding-bottom: max(56px, calc(env(safe-area-inset-bottom) + 24px)); }

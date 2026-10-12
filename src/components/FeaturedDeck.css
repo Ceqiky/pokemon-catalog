@@ -1,0 +1,44 @@
+.stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 100svh;
+  /* Снизу запас под карты колоды, выглядывающие из-под верхней. */
+  padding: 28px 0 96px;
+}
+.stage__loader {
+  width: 34px;
+  height: 34px;
+  border: 2px solid rgba(255, 255, 255, .12);
+  border-top-color: #9db4ff;
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+
+.stage__down {
+  position: absolute;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  transform: translateX(-50%);
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .04);
+  color: rgba(235, 240, 255, .8);
+  backdrop-filter: blur(8px);
+  transition: background .25s ease, border-color .25s ease;
+}
+.stage__down { bottom: 22px; }
+.stage__down:hover { background: rgba(255, 255, 255, .1); border-color: rgba(255, 255, 255, .3); }
+.stage__down svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.stage__down svg { animation: down-nudge 2.2s ease-in-out infinite; }
+@keyframes down-nudge { 50% { transform: translateY(3px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .stage__down svg, .stage__loader { animation: none; }
+}
+
+/* Когда есть место, куда вернуться в каталоге, стрелка вниз подсвечена — она вернёт именно туда */
+.stage__down.is-return { border-color: rgba(157, 180, 255, .6); color: #fff; box-shadow: 0 0 22px -4px rgba(157, 180, 255, .7); }

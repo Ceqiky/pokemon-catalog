@@ -1,0 +1,138 @@
+/* Цвета типа плавно перетекают при смене покемона (эволюция), поэтому описаны как настоящие <color>. */
+@property --type-color { syntax: "<color>"; inherits: true; initial-value: #9aa0b8; }
+@property --type-color-2 { syntax: "<color>"; inherits: true; initial-value: #9aa0b8; }
+
+.pface {
+  --type-color: #9aa0b8;
+  --type-color-2: #9aa0b8;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  padding: 5.5cqw;
+  gap: 2.5cqw;
+  color: #f3f5ff;
+  position: relative;
+  transition: --type-color .7s ease, --type-color-2 .7s ease;
+}
+
+/* Цветная подложка типа поверх нейтральной текстуры: фольга просвечивает, цвет меняется плавно. */
+.pface__tint {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  background:
+    radial-gradient(circle at 50% 30%, color-mix(in srgb, var(--type-color) 36%, transparent), transparent 62%),
+    linear-gradient(150deg, color-mix(in srgb, var(--type-color) 30%, transparent), transparent 52%, color-mix(in srgb, var(--type-color-2) 26%, transparent));
+}
+
+.pface__top {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 9cqw;
+}
+.pface__no { font: 400 3.4cqw/1 var(--font-mono); letter-spacing: .14em; color: rgba(235, 240, 255, .78); }
+.pface__evo-row { position: relative; z-index: 3; display: flex; justify-content: center; min-height: 6cqw; margin: -1cqw 0; }
+.pface__evo { display: flex; align-items: center; padding: 0 2cqw; border-radius: 99px; background: rgba(8, 10, 18, .55); border: 1px solid rgba(255, 255, 255, .08); }
+.pface__evo button { position: relative; width: 30px; height: 30px; padding: 0; border: 0; background: none; }
+.pface__evo button::before { content: ""; position: absolute; left: 50%; top: 50%; width: 7px; height: 7px; margin: -3.5px; border-radius: 99px; background: rgba(255, 255, 255, .35); transition: width .3s cubic-bezier(.2, .8, .2, 1), margin .3s cubic-bezier(.2, .8, .2, 1), background .3s ease; }
+.pface__evo button:hover::before { background: rgba(255, 255, 255, .7); }
+.pface__evo button.is-on::before { width: 18px; margin-left: -9px; background: var(--type-color); box-shadow: 0 0 10px var(--type-color); }
+.pface__fav {
+  display: grid;
+  place-items: center;
+  position: absolute;
+  top: 1.5cqw;
+  right: 1.5cqw;
+  z-index: 4;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: rgba(235, 240, 255, .7);
+  transition: transform .2s ease, color .2s ease;
+}
+.pface__fav .icon-heart { width: 20px; height: 20px; }
+.pface__fav:hover { transform: scale(1.12); color: #fff; }
+.pface__fav.is-favorite { color: var(--like); filter: drop-shadow(0 0 8px rgba(255, 77, 106, .7)); }
+
+/* Арт занимает всю ширину и чуть заходит под плашки — так покемон выглядит крупнее. */
+.pface__art { position: relative; z-index: 1; flex: 1 1 0; min-height: 0; display: flex; margin: -3cqw -1cqw -7cqw; }
+.pface__art .xfade { position: relative; flex: 1; min-width: 0; min-height: 0; }
+.pface__art .pimg { width: 100%; height: 100%; }
+.pface__art .pimg img { filter: drop-shadow(0 3cqw 2.4cqw rgba(0, 0, 0, .45)); }
+
+/* Панель над фольгой — текст всегда читается. */
+/* Плашка целиком лежит под фольгой (z-index 1 < 2), но кликабельна: холст фольги пропускает клики.
+   Над плашкой фольга ослаблена маской (см. useFoilDim). */
+.pface__panel {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3cqw;
+  padding: 4cqw 4.4cqw 4.4cqw;
+  border-radius: 4.5cqw;
+  background: linear-gradient(160deg, rgba(12, 15, 26, .94), rgba(7, 9, 16, .96)); /* плотнее: текст читается даже под фольгой */
+  border: 1px solid rgba(255, 255, 255, .1);
+  box-shadow: 0 10px 30px -12px rgba(0, 0, 0, .8);
+}
+/* Имя и типы всегда в два ряда: высота плашки не зависит от покемона, поэтому при смене стадии ничего не прыгает. */
+.pface__title { display: grid; gap: 2cqw; }
+.pface__title h3 {
+  margin: 0;
+  font: 700 clamp(15px, 6.4cqw, 24px)/1.1 var(--font-display);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 12cqw; /* место под кнопку избранного в углу плашки */
+}
+.pface__title .type-list { min-height: 0; gap: 1.6cqw; flex-wrap: nowrap; }
+
+.pface__stats { display: grid; grid-template-columns: 1fr 1fr; gap: 2.4cqw 5cqw; margin: 0; }
+.pface__stats > div { display: grid; grid-template-columns: auto 1fr; align-items: baseline; gap: 0 2cqw; }
+.pface__stats dt { font: 600 clamp(10px, 3.4cqw, 12px)/1 var(--font-body); letter-spacing: .12em; color: rgba(225, 232, 255, .8); }
+.pface__stats dd { margin: 0; justify-self: end; text-align: right; font-variant-numeric: tabular-nums; font: 700 clamp(12px, 4.2cqw, 15px)/1 var(--font-mono); color: #fff; }
+.pface__bar { grid-column: 1 / -1; height: 1.4cqw; min-height: 4px; margin-top: 1.2cqw; border-radius: 99px; background: rgba(255, 255, 255, .1); overflow: hidden; }
+.pface__bar i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, color-mix(in srgb, var(--type-color) 55%, #000), var(--type-color)); box-shadow: 0 0 10px var(--type-color); transition: width .7s cubic-bezier(.215, .61, .355, 1); }
+@media (prefers-reduced-motion: reduce) { .pface__bar i { transition: none; } }
+
+/* Изображения и скелетон загрузки */
+.pimg { position: relative; display: block; width: 100%; height: 100%; }
+.pimg img { display: block; width: 100%; height: 100%; object-fit: contain; opacity: 0; transition: opacity .35s ease; -webkit-user-drag: none; user-select: none; pointer-events: none; }
+.pimg[data-status="loaded"] img { opacity: 1; }
+/* Загрузка: контур покебола с бегущим бликом вместо серого овала. */
+.pimg[data-status="loading"]::before,
+.pimg[data-status="loading"]::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(44%, 68px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round'%3E%3Ccircle cx='50' cy='50' r='44'/%3E%3Cpath d='M6 50h30M64 50h30'/%3E%3Ccircle cx='50' cy='50' r='13'/%3E%3C/svg%3E") center / contain no-repeat;
+  opacity: .22;
+}
+.pimg[data-status="loading"]::after {
+  opacity: .9;
+  -webkit-mask-image: linear-gradient(105deg, transparent 38%, #000 50%, transparent 62%);
+  mask-image: linear-gradient(105deg, transparent 38%, #000 50%, transparent 62%);
+  -webkit-mask-size: 300% 100%;
+  mask-size: 300% 100%;
+  animation: pimg-sweep 1.5s ease-in-out infinite;
+}
+.pimg__fallback { display: grid; place-items: center; width: 100%; height: 100%; font: 700 40px var(--font-display); color: rgba(255, 255, 255, .3); }
+@keyframes pimg-sweep { from { -webkit-mask-position: 100% 0; mask-position: 100% 0; } to { -webkit-mask-position: 0 0; mask-position: 0 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .pimg img { transition: none; }
+  .pimg[data-status="loading"]::after { animation: none; }
+}
