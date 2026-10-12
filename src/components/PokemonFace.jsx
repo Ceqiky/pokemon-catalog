@@ -58,12 +58,14 @@ export default function PokemonFace({ pokemon, interactive, isFavorite, onFavori
       </div>
 
       <div className="pface__evo-row">
-        {interactive && evolutions.length > 1 && (
+        {/* Точки и сердечко рисуем у всех карточек колоды (не только у верхней): иначе после свайпа они «выскакивают» и макет дёргается. */}
+        {evolutions.length > 1 && (
           <div className="pface__evo" role="group" aria-label={t("evo.group")} data-no-swipe>
             {evolutions.map((member) => (
               <button
                 key={member.id}
                 type="button"
+                tabIndex={interactive ? 0 : -1}
                 className={member.id === pokemon.id ? "is-on" : ""}
                 aria-label={pname(member)}
                 aria-pressed={member.id === pokemon.id}
@@ -75,18 +77,17 @@ export default function PokemonFace({ pokemon, interactive, isFavorite, onFavori
       </div>
 
       <div className="pface__panel" ref={panelRef}>
-        {interactive && (
-          <button
-            className={`pface__fav ${isFavorite ? "is-favorite" : ""}`}
-            type="button"
-            data-no-swipe
-            aria-pressed={isFavorite}
-            aria-label={isFavorite ? t("card.fav.remove") : t("card.fav.add")}
-            onClick={() => onFavorite(pokemon.id)}
-          >
-            <HeartIcon filled={isFavorite} />
-          </button>
-        )}
+        <button
+          className={`pface__fav ${isFavorite ? "is-favorite" : ""}`}
+          type="button"
+          tabIndex={interactive ? 0 : -1}
+          data-no-swipe
+          aria-pressed={isFavorite}
+          aria-label={isFavorite ? t("card.fav.remove") : t("card.fav.add")}
+          onClick={() => onFavorite(pokemon.id)}
+        >
+          <HeartIcon filled={isFavorite} />
+        </button>
         <Crossfade id={pokemon.id} shift={dir * 20}>
           <div className="pface__title">
             <h3>{pname(pokemon)}</h3>

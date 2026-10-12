@@ -4,9 +4,12 @@ import { useEffect, useRef, useState } from "react";
  * Изображение покемона с индикатором загрузки (контур покебола) и запасным вариантом:
  * если лёгкая версия не загрузилась, пробуем оригинал (`fallback`), затем показываем заглушку.
  */
+// Уже загруженные адреса: при пересоздании компонента (карточка колоды сменила слой) картинка не мигает заново.
+const loadedSrcs = new Set();
+
 export default function PokemonImage({ src, fallback, alt, eager = false, priority, className = "" }) {
   const [current, setCurrent] = useState(src);
-  const [status, setStatus] = useState("loading");
+  const [status, setStatus] = useState(loadedSrcs.has(src) ? "loaded" : "loading");
   const imgRef = useRef(null);
 
   useEffect(() => {
@@ -37,7 +40,7 @@ export default function PokemonImage({ src, fallback, alt, eager = false, priori
           loading={eager ? "eager" : "lazy"}
           decoding="async"
           fetchpriority={priority} /* React 18 принимает атрибут только в нижнем регистре */
-          onLoad={() => setStatus("loaded")}
+          onLoad={() => { loadedSrcs.add(current); setStatus("loaded"); }}
           onError={handleError}
         />
       )}
