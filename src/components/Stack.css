@@ -38,7 +38,7 @@
   opacity: var(--op);
   pointer-events: auto;
   cursor: grab;
-  touch-action: pan-y; /* горизонталь — наш свайп, вертикаль — обычная прокрутка страницы (даже если начать жест на карточке) */
+  touch-action: none; /* страница под пальцем на карточке не двигается; вниз её листает только длинный явный свайп вверх (useSwipe) */
   will-change: transform;
 }
 .deck-card[data-layer="0"][data-swipe="dragging"] { cursor: grabbing; transition: none; }

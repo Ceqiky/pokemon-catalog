@@ -19,6 +19,7 @@ export default function FeaturedDeck({ items, familyOf, onSwipe, onDetails, onEv
           items={items}
           onSwipe={onSwipe}
           onDetails={onDetails}
+          onScrollAway={onScrollDown}
           ariaLabel={t("deck.aria", { name: pname(current), no: formatId(current.id) })}
           renderCard={({ pokemon }, isTop, layer) => (
             <PokemonHoloCard

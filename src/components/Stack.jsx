@@ -19,7 +19,7 @@ const LAYERS = [
  * после чего вызывается onSwipe и родитель сдвигает очередь.
  * Нижние карточки подтягиваются вверх пропорционально смещению (--p).
  */
-export default function Stack({ items, renderCard, onSwipe, onDetails, ariaLabel, className = "" }) {
+export default function Stack({ items, renderCard, onSwipe, onDetails, onScrollAway, ariaLabel, className = "" }) {
   const { t } = useI18n();
   const rootRef = useRef(null);
   const topRef = useRef(null);
@@ -30,6 +30,7 @@ export default function Stack({ items, renderCard, onSwipe, onDetails, ariaLabel
     enabled: items.length > 1,
     onSwipeUp: onDetails,
     onTap: onDetails,
+    onScrollAway,
     onProgress: (p, sign) => {
       const root = rootRef.current;
       if (!root) return;

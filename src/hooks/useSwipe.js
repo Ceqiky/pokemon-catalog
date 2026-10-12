@@ -4,6 +4,7 @@ const EXIT_MS = 640;
 const RETURN_MS = 620;
 const START_DISTANCE = 6;
 const FLING_VELOCITY = 0.6; // px/ms
+const SCROLL_AWAY_DISTANCE = 110; // пальцем вверх на столько px — «пролистнуть» страницу ниже; меньше — страница стоит на месте
 
 const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
 const prefersReducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -16,14 +17,14 @@ const thresholdFor = (el) => Math.max(80, el.offsetWidth * 0.3);
  *
  * Фазы элемента отражаются в data-swipe: "dragging" | "exiting" | "returning".
  */
-export default function useSwipe({ enabled, onProgress, onDragChange, onExit, onSwipeUp, onTap }) {
+export default function useSwipe({ enabled, onProgress, onDragChange, onExit, onSwipeUp, onTap, onScrollAway }) {
   const stateRef = useRef({
     id: null, el: null, x0: 0, y0: 0, dx: 0, dy: 0,
-    dragging: false, busy: false, raf: 0, timer: 0,
+    dragging: false, vertical: false, busy: false, raf: 0, timer: 0,
     lastX: 0, lastT: 0, vx: 0,
   });
   const latest = useRef({});
-  latest.current = { enabled, onProgress, onDragChange, onExit, onSwipeUp, onTap };
+  latest.current = { enabled, onProgress, onDragChange, onExit, onSwipeUp, onTap, onScrollAway };
   const s = stateRef.current;
 
   useEffect(() => () => {
@@ -183,6 +184,7 @@ export default function useSwipe({ enabled, onProgress, onDragChange, onExit, on
     s.dx = 0;
     s.dy = 0;
     s.dragging = false;
+    s.vertical = false;
     s.lastX = t.clientX;
     s.lastT = event.timeStamp;
     s.vx = 0;
@@ -194,13 +196,18 @@ export default function useSwipe({ enabled, onProgress, onDragChange, onExit, on
     const dx = t.clientX - s.x0;
     const dy = t.clientY - s.y0;
 
+    // Страница под колодой стоит на месте (touch-action: none): случайный вертикальный дрейф при свайпе её не дёргает.
+    // Вертикальный жест листает страницу только когда он явно вертикальный и длинный (см. touchEnd).
     if (!s.dragging) {
-      if (Math.hypot(dx, dy) < START_DISTANCE) return;
-      // Вертикальный жест — это прокрутка страницы: не мешаем ей
-      if (Math.abs(dy) > Math.abs(dx) * 1.2) {
-        resetPointer();
+      if (Math.hypot(dx, dy) < START_DISTANCE) { if (event.cancelable) event.preventDefault(); return; }
+      if (!s.vertical && Math.abs(dy) > 16 && Math.abs(dy) > Math.abs(dx) * 1.5) s.vertical = true;
+      if (s.vertical) {
+        s.dx = dx;
+        s.dy = dy;
+        if (event.cancelable) event.preventDefault();
         return;
       }
+      if (Math.abs(dx) < START_DISTANCE) { if (event.cancelable) event.preventDefault(); return; }
       s.dragging = true;
       s.el.dataset.swipe = "dragging";
       latest.current.onDragChange?.(true);
@@ -219,6 +226,13 @@ export default function useSwipe({ enabled, onProgress, onDragChange, onExit, on
 
   const touchEnd = (cancelled) => () => {
     if (s.id !== "touch") return;
+    if (s.vertical) {
+      const { dx, dy } = s;
+      s.vertical = false;
+      resetPointer();
+      if (!cancelled && dy < -SCROLL_AWAY_DISTANCE && Math.abs(dy) > Math.abs(dx) * 2) latest.current.onScrollAway?.();
+      return;
+    }
     complete(cancelled);
   };
 
