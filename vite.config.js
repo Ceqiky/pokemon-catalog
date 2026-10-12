@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
+  base: "./", // относительные пути: сайт работает и на корне домена, и на GitHub Pages (/имя-репозитория/)
   server: {
     host: true, // доступ с телефона по IP в локальной сети
     // Разрешаем адреса быстрых HTTPS-туннелей (нужны для проверки датчика наклона на iPhone)
