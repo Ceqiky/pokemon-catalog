@@ -58,26 +58,29 @@
   .deck-card[data-layer="0"][data-swipe="returning"] { transition: none; animation: none; }
 }
 
-/* Засвет экрана при свайпе */
+/* Засвет экрана при свайпе. Зелёный и красный — два отдельных слоя с фиксированным цветом: между ними переключается
+   только opacity, поэтому цвет не перерисовывается на лету (иначе при первом свайпе влево мелькал зелёный). */
 .deck-glow {
-  --glow: 46, 230, 140;
+  --glow: 255, 56, 84;
   position: fixed;
   inset: 0;
   z-index: 40;
   pointer-events: none;
-  opacity: calc(var(--p) * 0.95);
+  opacity: 0;
   background:
-    radial-gradient(ellipse 70% 90% at 100% 50%, rgba(var(--glow), .8), transparent 72%),
+    radial-gradient(ellipse 70% 90% at 0% 50%, rgba(var(--glow), .8), transparent 72%),
     radial-gradient(ellipse 120% 120% at 50% 50%, transparent 50%, rgba(var(--glow), .5) 100%);
   box-shadow: inset 0 0 150px 16px rgba(var(--glow), .65);
   transition: opacity .6s ease;
 }
-.deck[data-dir="left"] .deck-glow {
-  --glow: 255, 56, 84;
+.deck-glow--keep {
+  --glow: 46, 230, 140;
   background:
-    radial-gradient(ellipse 70% 90% at 0% 50%, rgba(var(--glow), .8), transparent 72%),
+    radial-gradient(ellipse 70% 90% at 100% 50%, rgba(var(--glow), .8), transparent 72%),
     radial-gradient(ellipse 120% 120% at 50% 50%, transparent 50%, rgba(var(--glow), .5) 100%);
 }
+.deck[data-dir="right"] .deck-glow--keep,
+.deck[data-dir="left"] .deck-glow--drop { opacity: calc(var(--p, 0) * 0.95); }
 .deck[data-dragging="true"] .deck-glow { transition-duration: .08s; }
 /* Значок свайпа: кольцо «рисуется» по броску, по нему бежит светящийся бегунок, при отпускании значок заливается.
    Значок и засвет гаснут по одному таймингу (opacity .6s), поэтому исчезают вместе. */

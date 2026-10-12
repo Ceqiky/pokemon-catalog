@@ -93,7 +93,8 @@ export default function Stack({ items, renderCard, onSwipe, onDetails, ariaLabel
       onKeyDown={handleKeyDown}
     >
       {/* Засвет экрана: зелёный — в избранное (вправо), красный — пропустить (влево). */}
-      <div className="deck-glow" aria-hidden="true" />
+      <div className="deck-glow deck-glow--keep" aria-hidden="true" />
+      <div className="deck-glow deck-glow--drop" aria-hidden="true" />
       <svg className="swipe-badge swipe-badge--keep" viewBox="0 0 24 24" aria-hidden="true">
         <circle className="swipe-badge__ring" cx="12" cy="12" r="11" pathLength="1" />
         <g transform="translate(5.280 4.890) scale(.56)"><path className="swipe-badge__icon" d={HEART_PATH} /></g>
