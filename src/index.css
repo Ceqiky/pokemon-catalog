@@ -201,3 +201,4 @@ html[data-scrolled="true"] .to-deck { opacity: 1; transform: none; pointer-event
 
 /* Отступ снизу с учётом «чёлки»/индикатора на телефонах */
 .app-shell { padding-bottom: max(56px, calc(env(safe-area-inset-bottom) + 24px)); }
+.app-shell { padding-top: env(safe-area-inset-top); }
